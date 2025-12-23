@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Global styles for 3D Interactive Globe
+ * Dark/Space theme with custom animations
+ */
+
+@layer base {
+  /* Root variables */
+  :root {
+    --color-space-dark: #0a0e1a;
+    --color-space-darker: #050711;
+    --color-space-blue: #3b82f6;
+    --color-nebula-purple: #8b5cf6;
+    --color-star-white: #ffffff;
+  }
+
+  /* Base styles */
+  body {
+    @apply bg-space-dark text-white antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent text selection during globe interaction */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-space-darker;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-space-blue rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-blue-400;
+  }
+}
+
+@layer components {
+  /* Globe cursor states */
+  .cursor-grab {
+    cursor: grab;
+  }
+
+  .cursor-grabbing {
+    cursor: grabbing;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply inline-block h-8 w-8 animate-spin rounded-full border-4 border-space-blue border-t-transparent;
+  }
+
+  /* Card component */
+  .card {
+    @apply rounded-lg border border-gray-700 bg-space-dark/90 p-4 shadow-lg backdrop-blur-sm;
+  }
+
+  /* Button variants */
+  .btn {
+    @apply rounded px-4 py-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-space-blue text-white hover:bg-blue-600 focus:ring-space-blue;
+  }
+
+  .btn-secondary {
+    @apply border border-gray-600 text-gray-300 hover:bg-gray-800 focus:ring-gray-500;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-slideDown {
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Text gradients */
+  .text-gradient {
+    @apply bg-gradient-to-r from-space-blue to-nebula-purple bg-clip-text text-transparent;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 shadow-lg;
+  }
+
+  /* Elevation shadows */
+  .elevation-1 {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .elevation-2 {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .elevation-3 {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Three.js canvas styling */
+canvas {
+  @apply block;
+  outline: none;
+}
+
+/* Prevent canvas context menu */
+canvas {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

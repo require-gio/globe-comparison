@@ -1,0 +1,246 @@
+openapi: 3.0.3
+info:
+  title: Globe Geography Data API
+  description: REST API for retrieving TopoJSON geographic boundary data for the 3D interactive globe
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://api.globe.example.com/api
+    description: Production server
+  - url: https://cdn.globe.example.com
+    description: CDN server (production)
+
+paths:
+  /globe/topojson:
+    get:
+      summary: Get TopoJSON geography data
+      description: Retrieve TopoJSON file containing country boundaries for 3D globe rendering. This endpoint returns a large TopoJSON topology with all country geometries and should be cached aggressively.
+      operationId: getGlobeTopojson
+      tags:
+        - Geography
+      responses:
+        '200':
+          description: Successfully retrieved TopoJSON data
+          headers:
+            Cache-Control:
+              description: Cache control header for CDN and browser caching
+              schema:
+                type: string
+                example: "public, max-age=31536000, immutable"
+            ETag:
+              description: Entity tag for cache validation
+              schema:
+                type: string
+                example: '"5d41402abc4b2a76b9719d911017c592"'
+            Content-Encoding:
+              description: Content encoding (typically gzip or br)
+              schema:
+                type: string
+                example: "gzip"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopoJSON'
+              example:
+                type: "Topology"
+                objects:
+                  countries:
+                    type: "GeometryCollection"
+                    geometries:
+                      - type: "Polygon"
+                        id: "USA"
+                        properties:
+                          iso_code: "USA"
+                          name: "United States of America"
+                        arcs: [[0, 1, 2, 3, 4]]
+                arcs: [
+                  [[100, 0], [101, 0], [101, 1], [100, 1], [100, 0]]
+                ]
+                transform:
+                  scale: [0.0001, 0.0001]
+                  translate: [-180, -90]
+        '304':
+          description: Not Modified - cached version is still valid
+          headers:
+            ETag:
+              description: Entity tag matching the request If-None-Match header
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Internal Server Error"
+                message: "Failed to load TopoJSON data"
+                statusCode: 500
+
+components:
+  schemas:
+    TopoJSON:
+      type: object
+      description: TopoJSON Topology format containing country geometries
+      required:
+        - type
+        - objects
+        - arcs
+      properties:
+        type:
+          type: string
+          description: Must be "Topology"
+          enum:
+            - Topology
+          example: "Topology"
+        objects:
+          type: object
+          description: Named geometry collections
+          properties:
+            countries:
+              $ref: '#/components/schemas/GeometryCollection'
+        arcs:
+          type: array
+          description: Array of arc coordinate sequences (shared edges)
+          items:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+              minItems: 2
+              maxItems: 2
+          example: [
+            [[100, 0], [101, 0], [101, 1], [100, 1], [100, 0]]
+          ]
+        transform:
+          $ref: '#/components/schemas/Transform'
+        bbox:
+          type: array
+          description: Optional bounding box [minX, minY, maxX, maxY]
+          items:
+            type: number
+          minItems: 4
+          maxItems: 4
+          example: [-180, -90, 180, 90]
+    
+    GeometryCollection:
+      type: object
+      description: Collection of TopoJSON geometries
+      required:
+        - type
+        - geometries
+      properties:
+        type:
+          type: string
+          enum:
+            - GeometryCollection
+          example: "GeometryCollection"
+        geometries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Geometry'
+    
+    Geometry:
+      type: object
+      description: TopoJSON Geometry object (Polygon or MultiPolygon)
+      required:
+        - type
+        - arcs
+      properties:
+        type:
+          type: string
+          enum:
+            - Polygon
+            - MultiPolygon
+          example: "Polygon"
+        id:
+          type: string
+          description: ISO 3166-1 alpha-3 country code
+          pattern: '^[A-Z]{3}$'
+          example: "USA"
+        properties:
+          type: object
+          description: Additional properties for the geometry
+          properties:
+            iso_code:
+              type: string
+              description: ISO 3166-1 alpha-3 country code
+              example: "USA"
+            name:
+              type: string
+              description: Country name
+              example: "United States of America"
+        arcs:
+          oneOf:
+            - type: array
+              description: Polygon arcs (array of arc indices)
+              items:
+                type: array
+                items:
+                  type: integer
+            - type: array
+              description: MultiPolygon arcs (array of polygon arcs)
+              items:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: integer
+          example: [[0, 1, 2, 3, 4]]
+    
+    Transform:
+      type: object
+      description: TopoJSON quantization transform for coordinate compression
+      required:
+        - scale
+        - translate
+      properties:
+        scale:
+          type: array
+          description: Scale factors [scaleX, scaleY]
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+          example: [0.0001, 0.0001]
+        translate:
+          type: array
+          description: Translation offsets [translateX, translateY]
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+          example: [-180, -90]
+    
+    Error:
+      type: object
+      description: Error response object
+      required:
+        - error
+        - message
+        - statusCode
+      properties:
+        error:
+          type: string
+          description: Error type/name
+          example: "Internal Server Error"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Failed to load TopoJSON data"
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 500
+
+tags:
+  - name: Geography
+    description: Geographic data endpoints
+
+externalDocs:
+  description: TopoJSON Specification
+  url: https://github.com/topojson/topojson-specification

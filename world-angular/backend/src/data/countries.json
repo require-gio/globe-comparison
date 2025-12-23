@@ -1,0 +1,310 @@
+{
+  "US": {
+    "code": "US",
+    "name": "United States",
+    "population": 331002651,
+    "capital": "Washington, D.C.",
+    "region": "Americas"
+  },
+  "CA": {
+    "code": "CA",
+    "name": "Canada",
+    "population": 38005238,
+    "capital": "Ottawa",
+    "region": "Americas"
+  },
+  "MX": {
+    "code": "MX",
+    "name": "Mexico",
+    "population": 128932753,
+    "capital": "Mexico City",
+    "region": "Americas"
+  },
+  "BR": {
+    "code": "BR",
+    "name": "Brazil",
+    "population": 212559417,
+    "capital": "Brasília",
+    "region": "Americas"
+  },
+  "AR": {
+    "code": "AR",
+    "name": "Argentina",
+    "population": 45195774,
+    "capital": "Buenos Aires",
+    "region": "Americas"
+  },
+  "CL": {
+    "code": "CL",
+    "name": "Chile",
+    "population": 19116201,
+    "capital": "Santiago",
+    "region": "Americas"
+  },
+  "GB": {
+    "code": "GB",
+    "name": "United Kingdom",
+    "population": 67886011,
+    "capital": "London",
+    "region": "Europe"
+  },
+  "FR": {
+    "code": "FR",
+    "name": "France",
+    "population": 67391582,
+    "capital": "Paris",
+    "region": "Europe"
+  },
+  "DE": {
+    "code": "DE",
+    "name": "Germany",
+    "population": 83783942,
+    "capital": "Berlin",
+    "region": "Europe"
+  },
+  "IT": {
+    "code": "IT",
+    "name": "Italy",
+    "population": 60461826,
+    "capital": "Rome",
+    "region": "Europe"
+  },
+  "ES": {
+    "code": "ES",
+    "name": "Spain",
+    "population": 47351567,
+    "capital": "Madrid",
+    "region": "Europe"
+  },
+  "PL": {
+    "code": "PL",
+    "name": "Poland",
+    "population": 37846611,
+    "capital": "Warsaw",
+    "region": "Europe"
+  },
+  "RO": {
+    "code": "RO",
+    "name": "Romania",
+    "population": 19237691,
+    "capital": "Bucharest",
+    "region": "Europe"
+  },
+  "NL": {
+    "code": "NL",
+    "name": "Netherlands",
+    "population": 17134872,
+    "capital": "Amsterdam",
+    "region": "Europe"
+  },
+  "BE": {
+    "code": "BE",
+    "name": "Belgium",
+    "population": 11589623,
+    "capital": "Brussels",
+    "region": "Europe"
+  },
+  "GR": {
+    "code": "GR",
+    "name": "Greece",
+    "population": 10423054,
+    "capital": "Athens",
+    "region": "Europe"
+  },
+  "PT": {
+    "code": "PT",
+    "name": "Portugal",
+    "population": 10196709,
+    "capital": "Lisbon",
+    "region": "Europe"
+  },
+  "SE": {
+    "code": "SE",
+    "name": "Sweden",
+    "population": 10099265,
+    "capital": "Stockholm",
+    "region": "Europe"
+  },
+  "AT": {
+    "code": "AT",
+    "name": "Austria",
+    "population": 9006398,
+    "capital": "Vienna",
+    "region": "Europe"
+  },
+  "CH": {
+    "code": "CH",
+    "name": "Switzerland",
+    "population": 8654622,
+    "capital": "Bern",
+    "region": "Europe"
+  },
+  "NO": {
+    "code": "NO",
+    "name": "Norway",
+    "population": 5421241,
+    "capital": "Oslo",
+    "region": "Europe"
+  },
+  "RU": {
+    "code": "RU",
+    "name": "Russia",
+    "population": 145934462,
+    "capital": "Moscow",
+    "region": "Europe/Asia"
+  },
+  "CN": {
+    "code": "CN",
+    "name": "China",
+    "population": 1439323776,
+    "capital": "Beijing",
+    "region": "Asia"
+  },
+  "IN": {
+    "code": "IN",
+    "name": "India",
+    "population": 1380004385,
+    "capital": "New Delhi",
+    "region": "Asia"
+  },
+  "JP": {
+    "code": "JP",
+    "name": "Japan",
+    "population": 125836021,
+    "capital": "Tokyo",
+    "region": "Asia"
+  },
+  "KR": {
+    "code": "KR",
+    "name": "South Korea",
+    "population": 51269185,
+    "capital": "Seoul",
+    "region": "Asia"
+  },
+  "ID": {
+    "code": "ID",
+    "name": "Indonesia",
+    "population": 273523615,
+    "capital": "Jakarta",
+    "region": "Asia"
+  },
+  "TH": {
+    "code": "TH",
+    "name": "Thailand",
+    "population": 69799978,
+    "capital": "Bangkok",
+    "region": "Asia"
+  },
+  "VN": {
+    "code": "VN",
+    "name": "Vietnam",
+    "population": 97338579,
+    "capital": "Hanoi",
+    "region": "Asia"
+  },
+  "PH": {
+    "code": "PH",
+    "name": "Philippines",
+    "population": 109581078,
+    "capital": "Manila",
+    "region": "Asia"
+  },
+  "MY": {
+    "code": "MY",
+    "name": "Malaysia",
+    "population": 32365999,
+    "capital": "Kuala Lumpur",
+    "region": "Asia"
+  },
+  "SG": {
+    "code": "SG",
+    "name": "Singapore",
+    "population": 5850342,
+    "capital": "Singapore",
+    "region": "Asia"
+  },
+  "TR": {
+    "code": "TR",
+    "name": "Turkey",
+    "population": 84339067,
+    "capital": "Ankara",
+    "region": "Asia/Europe"
+  },
+  "SA": {
+    "code": "SA",
+    "name": "Saudi Arabia",
+    "population": 34813871,
+    "capital": "Riyadh",
+    "region": "Asia"
+  },
+  "AE": {
+    "code": "AE",
+    "name": "United Arab Emirates",
+    "population": 9890402,
+    "capital": "Abu Dhabi",
+    "region": "Asia"
+  },
+  "IL": {
+    "code": "IL",
+    "name": "Israel",
+    "population": 9216900,
+    "capital": "Jerusalem",
+    "region": "Asia"
+  },
+  "EG": {
+    "code": "EG",
+    "name": "Egypt",
+    "population": 102334404,
+    "capital": "Cairo",
+    "region": "Africa"
+  },
+  "ZA": {
+    "code": "ZA",
+    "name": "South Africa",
+    "population": 59308690,
+    "capital": "Pretoria",
+    "region": "Africa"
+  },
+  "NG": {
+    "code": "NG",
+    "name": "Nigeria",
+    "population": 206139589,
+    "capital": "Abuja",
+    "region": "Africa"
+  },
+  "KE": {
+    "code": "KE",
+    "name": "Kenya",
+    "population": 53771296,
+    "capital": "Nairobi",
+    "region": "Africa"
+  },
+  "ET": {
+    "code": "ET",
+    "name": "Ethiopia",
+    "population": 114963588,
+    "capital": "Addis Ababa",
+    "region": "Africa"
+  },
+  "MA": {
+    "code": "MA",
+    "name": "Morocco",
+    "population": 36910560,
+    "capital": "Rabat",
+    "region": "Africa"
+  },
+  "AU": {
+    "code": "AU",
+    "name": "Australia",
+    "population": 25499884,
+    "capital": "Canberra",
+    "region": "Oceania"
+  },
+  "NZ": {
+    "code": "NZ",
+    "name": "New Zealand",
+    "population": 4822233,
+    "capital": "Wellington",
+    "region": "Oceania"
+  }
+}

@@ -1,0 +1,35 @@
+<div class="country-info-popover" *ngIf="country || isLoading || error">
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error && !isLoading" class="error-state">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Country data -->
+  <div *ngIf="country && !isLoading && !error" class="country-data">
+    <h3 class="country-name">{{ country.name }}</h3>
+    <div class="country-details">
+      <div class="detail-row">
+        <span class="label">Capital:</span>
+        <span class="value">{{ country.capital }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Population:</span>
+        <span class="value">{{ formatPopulation(country.population) }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Region:</span>
+        <span class="value">{{ country.region }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Code:</span>
+        <span class="value">{{ country.code }}</span>
+      </div>
+    </div>
+  </div>
+</div>

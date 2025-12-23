@@ -1,0 +1,173 @@
+openapi: 3.0.3
+info:
+  title: Globe Country Information API
+  description: REST API for retrieving country information for the 3D interactive globe application
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://api.globe.example.com/api
+    description: Production server
+
+paths:
+  /countries/{iso_code}:
+    get:
+      summary: Get country information
+      description: Retrieve detailed information about a specific country by its ISO 3166-1 alpha-3 code
+      operationId: getCountryInfo
+      tags:
+        - Countries
+      parameters:
+        - name: iso_code
+          in: path
+          required: true
+          description: ISO 3166-1 alpha-3 country code (e.g., "USA", "FRA", "JPN")
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}$'
+            example: "USA"
+      responses:
+        '200':
+          description: Successfully retrieved country information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryInfo'
+              examples:
+                usa:
+                  summary: United States
+                  value:
+                    iso_code: "USA"
+                    name: "United States of America"
+                    population: 331000000
+                    capital: "Washington, D.C."
+                    region: "Americas"
+                    retrieved_at: "2025-10-08T14:30:00.000Z"
+                france:
+                  summary: France
+                  value:
+                    iso_code: "FRA"
+                    name: "France"
+                    population: 67000000
+                    capital: "Paris"
+                    region: "Europe"
+                    retrieved_at: "2025-10-08T14:30:00.000Z"
+        '400':
+          description: Invalid ISO code format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Bad Request"
+                message: "Invalid ISO code format. Expected 3 uppercase letters."
+                statusCode: 400
+        '404':
+          description: Country not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Not Found"
+                message: "Country with ISO code 'XXX' not found"
+                statusCode: 404
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Too Many Requests"
+                message: "Rate limit exceeded. Maximum 100 requests per minute."
+                statusCode: 429
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Internal Server Error"
+                message: "An unexpected error occurred while retrieving country information"
+                statusCode: 500
+
+components:
+  schemas:
+    CountryInfo:
+      type: object
+      description: Country information response object
+      required:
+        - iso_code
+        - name
+        - population
+        - capital
+        - region
+        - retrieved_at
+      properties:
+        iso_code:
+          type: string
+          description: ISO 3166-1 alpha-3 country code
+          pattern: '^[A-Z]{3}$'
+          example: "USA"
+        name:
+          type: string
+          description: Official country name
+          minLength: 1
+          maxLength: 255
+          example: "United States of America"
+        population:
+          type: integer
+          description: Current population count
+          format: int64
+          minimum: 0
+          example: 331000000
+        capital:
+          type: string
+          description: Capital city name
+          minLength: 1
+          maxLength: 255
+          example: "Washington, D.C."
+        region:
+          type: string
+          description: Geographic region
+          enum:
+            - Africa
+            - Americas
+            - Asia
+            - Europe
+            - Oceania
+          example: "Americas"
+        retrieved_at:
+          type: string
+          description: ISO 8601 timestamp when data was retrieved
+          format: date-time
+          example: "2025-10-08T14:30:00.000Z"
+    
+    Error:
+      type: object
+      description: Error response object
+      required:
+        - error
+        - message
+        - statusCode
+      properties:
+        error:
+          type: string
+          description: Error type/name
+          example: "Not Found"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Country with ISO code 'XXX' not found"
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 404
+
+tags:
+  - name: Countries
+    description: Country information endpoints

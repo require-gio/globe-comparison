@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: World Globe API
+  description: REST API for retrieving country information for the 3D interactive globe application
+  version: 1.0.0
+  contact:
+    name: World Globe Team
+    email: support@worldglobe.example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+  - url: http://localhost:3000/api
+    description: Local development server (with /api prefix)
+
+tags:
+  - name: Country
+    description: Country information endpoints
+
+paths:
+  /country/{code}:
+    get:
+      tags:
+        - Country
+      summary: Get country information by ISO code
+      description: Returns detailed information about a country including name, population, capital, and region
+      operationId: getCountryByCode
+      parameters:
+        - name: code
+          in: path
+          description: ISO 3166-1 alpha-2 country code (2 uppercase letters)
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{2}$'
+            minLength: 2
+            maxLength: 2
+            example: US
+      responses:
+        '200':
+          description: Country information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+              examples:
+                unitedStates:
+                  summary: United States
+                  value:
+                    code: US
+                    name: United States
+                    population: 331002651
+                    capital: Washington, D.C.
+                    region: Americas
+                france:
+                  summary: France
+                  value:
+                    code: FR
+                    name: France
+                    population: 67391582
+                    capital: Paris
+                    region: Europe
+                japan:
+                  summary: Japan
+                  value:
+                    code: JP
+                    name: Japan
+                    population: 125836021
+                    capital: Tokyo
+                    region: Asia
+        '404':
+          description: Country not found or information unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: Country not found
+                  value:
+                    message: Information unavailable
+        '400':
+          description: Invalid country code format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidFormat:
+                  summary: Invalid code format
+                  value:
+                    message: Invalid country code format. Must be 2 uppercase letters.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                serverError:
+                  summary: Server error
+                  value:
+                    message: Internal server error
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Returns server health status for monitoring and container orchestration
+      operationId: getHealth
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2025-10-13T12:00:00.000Z'
+                  uptime:
+                    type: number
+                    description: Server uptime in seconds
+                    example: 3600
+        '503':
+          description: Server is unhealthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [error]
+                  message:
+                    type: string
+
+components:
+  schemas:
+    Country:
+      type: object
+      required:
+        - code
+        - name
+        - population
+        - capital
+        - region
+      properties:
+        code:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          pattern: '^[A-Z]{2}$'
+          minLength: 2
+          maxLength: 2
+          example: US
+        name:
+          type: string
+          description: Official country name
+          minLength: 1
+          maxLength: 100
+          example: United States
+        population:
+          type: integer
+          description: Total population
+          minimum: 0
+          example: 331002651
+        capital:
+          type: string
+          description: Capital city name
+          minLength: 1
+          maxLength: 100
+          example: Washington, D.C.
+        region:
+          type: string
+          description: Geographic region
+          enum:
+            - Africa
+            - Americas
+            - Asia
+            - Europe
+            - Oceania
+          example: Americas
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: Information unavailable
+        code:
+          type: string
+          description: Machine-readable error code (optional)
+          example: COUNTRY_NOT_FOUND
+        details:
+          type: object
+          description: Additional error details (optional)
+          additionalProperties: true
+
+  securitySchemes: {}
+
+security: []
+
+externalDocs:
+  description: Feature Specification
+  url: ../spec.md

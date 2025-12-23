@@ -1,0 +1,348 @@
+openapi: 3.0.3
+info:
+  title: World Vue Countries API
+  description: REST API for retrieving country information for 3D interactive globe application
+  version: 1.0.0
+  contact:
+    name: World Vue Team
+  license:
+    name: MIT
+
+servers:
+  - url: https://api.world-vue.app/api/v1
+    description: Production server
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+
+paths:
+  /countries/{iso}:
+    get:
+      summary: Get country information
+      description: Retrieve detailed information about a specific country by its ISO 3166-1 alpha-3 code
+      operationId: getCountryByIso
+      tags:
+        - Countries
+      parameters:
+        - name: iso
+          in: path
+          required: true
+          description: ISO 3166-1 alpha-3 country code (3 uppercase letters)
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}$'
+            example: FRA
+      responses:
+        '200':
+          description: Successfully retrieved country information
+          headers:
+            X-Response-Time:
+              description: Response time in milliseconds
+              schema:
+                type: integer
+            X-Request-ID:
+              description: Unique request identifier
+              schema:
+                type: string
+            Cache-Control:
+              description: Cache directives
+              schema:
+                type: string
+                example: 'public, max-age=21600'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+              examples:
+                france:
+                  summary: France country data
+                  value:
+                    id: FRA
+                    name: France
+                    capital: Paris
+                    population: 67391582
+                    region: Europe
+                    subregion: Western Europe
+                    area: 643801.0
+                    currency: EUR
+                    languages: [fra]
+                    flag: 🇫🇷
+                    coordinates:
+                      lat: 46.2276
+                      lng: 2.2137
+                    timezone: UTC+1
+                    source: cache
+                    updatedAt: '2025-10-08T12:34:56.789Z'
+        '400':
+          description: Invalid country code format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Invalid country code
+                message: Country code must be a 3-letter ISO 3166-1 alpha-3 code
+                timestamp: '2025-10-12T10:30:00.000Z'
+                path: /api/v1/countries/INVALID
+        '404':
+          description: Country not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Country not found
+                message: 'No country found with ISO code: XYZ'
+                timestamp: '2025-10-12T10:30:00.000Z'
+                path: /api/v1/countries/XYZ
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              description: Rate limit threshold
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Remaining requests in current window
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Time when rate limit resets (Unix timestamp)
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Too many requests
+                message: Rate limit exceeded. Please try again in 60 seconds.
+                timestamp: '2025-10-12T10:30:00.000Z'
+        '503':
+          description: Service temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Information unavailable
+                message: Service temporarily unavailable. Please try again later.
+                timestamp: '2025-10-12T10:30:00.000Z'
+
+  /health:
+    get:
+      summary: Health check
+      description: Check API availability and dependencies status
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy or degraded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+              examples:
+                healthy:
+                  summary: All systems operational
+                  value:
+                    status: ok
+                    version: 1.0.0
+                    uptime: 3600
+                    database: connected
+                    cache: connected
+                    timestamp: '2025-10-12T10:30:00.000Z'
+                degraded:
+                  summary: Cache unavailable
+                  value:
+                    status: degraded
+                    version: 1.0.0
+                    uptime: 3600
+                    database: connected
+                    cache: disconnected
+                    timestamp: '2025-10-12T10:30:00.000Z'
+        '503':
+          description: Service is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+              example:
+                status: error
+                version: 1.0.0
+                uptime: 3600
+                database: disconnected
+                cache: disconnected
+                timestamp: '2025-10-12T10:30:00.000Z'
+
+components:
+  schemas:
+    Country:
+      type: object
+      required:
+        - id
+        - name
+        - source
+        - updatedAt
+      properties:
+        id:
+          type: string
+          description: ISO 3166-1 alpha-3 country code
+          pattern: '^[A-Z]{3}$'
+          example: FRA
+        name:
+          type: string
+          description: Official country name
+          maxLength: 100
+          example: France
+        capital:
+          type: string
+          description: Capital city name
+          maxLength: 100
+          example: Paris
+        population:
+          type: integer
+          description: Current population estimate
+          minimum: 0
+          example: 67391582
+        region:
+          type: string
+          description: Geographic region
+          maxLength: 50
+          example: Europe
+        subregion:
+          type: string
+          description: Sub-geographic region
+          maxLength: 50
+          example: Western Europe
+        area:
+          type: number
+          description: Total area in square kilometers
+          minimum: 0
+          example: 643801.0
+        currency:
+          type: string
+          description: Primary currency code
+          maxLength: 10
+          example: EUR
+        languages:
+          type: array
+          description: Array of official language codes
+          items:
+            type: string
+            maxLength: 10
+          example: [fra, deu]
+        flag:
+          type: string
+          description: Flag emoji or URL
+          maxLength: 200
+          example: 🇫🇷
+        coordinates:
+          type: object
+          description: Country centroid coordinates
+          required:
+            - lat
+            - lng
+          properties:
+            lat:
+              type: number
+              minimum: -90
+              maximum: 90
+              example: 46.2276
+            lng:
+              type: number
+              minimum: -180
+              maximum: 180
+              example: 2.2137
+        timezone:
+          type: string
+          description: Primary timezone
+          maxLength: 20
+          example: UTC+1
+        source:
+          type: string
+          description: Data source indicator
+          enum: [static, api, cache]
+          example: cache
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of last update
+          example: '2025-10-08T12:34:56.789Z'
+
+    Error:
+      type: object
+      required:
+        - error
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Short error identifier
+          example: Country not found
+        message:
+          type: string
+          description: Human-readable error description
+          example: No country found with ISO code XYZ
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+          example: '2025-10-12T10:30:00.000Z'
+        path:
+          type: string
+          description: Request path that caused error
+          example: /api/v1/countries/XYZ
+        requestId:
+          type: string
+          description: Unique request ID for debugging
+          example: req_abc123xyz
+
+    Health:
+      type: object
+      required:
+        - status
+        - version
+        - uptime
+        - database
+        - cache
+        - timestamp
+      properties:
+        status:
+          type: string
+          description: Overall system status
+          enum: [ok, degraded, error]
+          example: ok
+        version:
+          type: string
+          description: API version
+          example: 1.0.0
+        uptime:
+          type: integer
+          description: Server uptime in seconds
+          example: 3600
+        database:
+          type: string
+          description: Database connection status
+          enum: [connected, disconnected]
+          example: connected
+        cache:
+          type: string
+          description: Cache connection status
+          enum: [connected, disconnected]
+          example: connected
+        timestamp:
+          type: string
+          format: date-time
+          description: Current server time
+          example: '2025-10-12T10:30:00.000Z'
+
+  securitySchemes: {}
+
+security: []
+
+tags:
+  - name: Countries
+    description: Country information endpoints
+  - name: Health
+    description: Health check and monitoring endpoints
