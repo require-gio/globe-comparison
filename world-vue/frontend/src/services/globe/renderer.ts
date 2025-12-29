@@ -24,7 +24,7 @@ export class GlobeRenderer {
       0.1, // Near plane
       1000 // Far plane
     )
-    this.camera.position.z = 3
+    this.camera.position.z = 4
 
     // Create renderer
     this.renderer = new THREE.WebGLRenderer({
