@@ -7,6 +7,9 @@
 
 **In short:** Three full-stack examples, identical functionality (3D Globe + country API), different frontends. The goal is reproducible comparisons of model outputs on identical UI/UX flows.
 
+### Specification Consistency with Spec-Kit
+This experiment uses [**spec-kit**](https://github.com/github/spec-kit) to maintain specification consistency across all three implementations. Each app shares the same `spec.md` file that defines the feature requirements and behavior — only `plan.md` and `tasks.md` differ based on the technologies used. This approach ensured reproducible feature parity and made framework-specific implementation differences measurable and comparable.
+
 ---
 
 ## 🔧 Repository Structure (Overview)
