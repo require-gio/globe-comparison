@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { Country } from '../../types/Country';
 import type { ApiErrorResponse } from '../../types/api';
 
-const API_BASE_URL = '/api';
+// Use Vite env var when available; fall back to local backend on port 4002
+const API_BASE_URL = (((import.meta.env.VITE_API_URL as string) || 'http://localhost:4002').replace(/\/$/, '')) + '/api';
 
 async function fetchCountryByIso(isoCode: string): Promise<Country> {
   const response = await fetch(`${API_BASE_URL}/countries/${isoCode.toUpperCase()}`);

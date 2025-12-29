@@ -1,0 +1,168 @@
+version: '3.8'
+
+services:
+  # ---- World Vue ----
+  world-vue-postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: world_vue
+    volumes:
+      - world_vue_postgres_data:/var/lib/postgresql/data
+    networks:
+      - world-vue-net
+
+  world-vue-redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - world_vue_redis_data:/data
+    networks:
+      - world-vue-net
+
+  world-vue-backend:
+    build:
+      context: ./world-vue/backend
+      dockerfile: Dockerfile
+    container_name: world-vue-backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@world-vue-postgres:5432/world_vue
+      REDIS_URL: redis://world-vue-redis:6379
+      PORT: 3000
+      HOST: 0.0.0.0
+      CORS_ORIGIN: http://localhost:${WORLD_VUE_FRONTEND_PORT}
+      CACHE_TTL: 21600
+    ports:
+      - "${WORLD_VUE_BACKEND_PORT}:3000"   # mapped to host via .env
+    depends_on:
+      - world-vue-postgres
+      - world-vue-redis
+    command: sh -c "npx prisma migrate deploy && node dist/server.js"
+    networks:
+      - world-vue-net
+
+  world-vue-frontend:
+    build:
+      context: ./world-vue/frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:${WORLD_VUE_BACKEND_PORT}
+    container_name: world-vue-frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:${WORLD_VUE_BACKEND_PORT}
+    ports:
+      - "${WORLD_VUE_FRONTEND_PORT}:8080"   # mapped to host via .env
+    depends_on:
+      - world-vue-backend
+    networks:
+      - world-vue-net
+
+  # ---- World React ----
+  world-react-postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: globe_user
+      POSTGRES_PASSWORD: globe_pass
+      POSTGRES_DB: globe_db
+    volumes:
+      - world_react_postgres_data:/var/lib/postgresql/data
+    networks:
+      - world-react-net
+
+  world-react-redis:
+    image: redis:7-alpine
+    volumes:
+      - world_react_redis_data:/data
+    networks:
+      - world-react-net
+
+  world-react-backend:
+    build:
+      context: ./world-react
+      dockerfile: docker/backend.Dockerfile
+    container_name: world-react-backend
+    environment:
+      NODE_ENV: development
+      PORT: 4000            # container listens on 4000
+      DATABASE_URL: postgres://globe_user:globe_pass@world-react-postgres:5432/globe_db
+      REDIS_URL: redis://world-react-redis:6379
+      CORS_ORIGIN: http://localhost:${WORLD_REACT_FRONTEND_PORT}
+    ports:
+      - "${WORLD_REACT_BACKEND_PORT}:4000"   # mapped to host via .env
+    volumes:
+      - ./world-react/backend:/app
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      - world-react-postgres
+      - world-react-redis
+    networks:
+      - world-react-net
+
+  world-react-frontend:
+    build:
+      context: ./world-react/frontend
+      dockerfile: ../docker/frontend.Dockerfile
+      args:
+        VITE_API_URL: http://localhost:${WORLD_REACT_BACKEND_PORT}
+    container_name: world-react-frontend
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:${WORLD_REACT_BACKEND_PORT}
+    ports:
+      - "${WORLD_REACT_FRONTEND_PORT}:3000"   # mapped to host via .env
+    volumes:
+      - ./world-react/frontend:/app
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      - world-react-backend
+    networks:
+      - world-react-net
+
+  # ---- World Angular ----
+  world-angular-backend:
+    build:
+      context: ./world-angular/backend
+      dockerfile: Dockerfile
+    container_name: world-angular-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      CORS_ORIGIN: http://localhost:${WORLD_ANGULAR_FRONTEND_PORT}
+    ports:
+      - "${WORLD_ANGULAR_BACKEND_PORT}:3000"   # mapped to host via .env
+    networks:
+      - world-angular-net
+
+  world-angular-frontend:
+    build:
+      context: ./world-angular/frontend
+      dockerfile: Dockerfile
+      args:
+        API_URL: http://localhost:${WORLD_ANGULAR_BACKEND_PORT}
+    container_name: world-angular-frontend
+    environment:
+      NODE_ENV: production
+    ports:
+      - "${WORLD_ANGULAR_FRONTEND_PORT}:80"   # map to nginx port 80
+    depends_on:
+      - world-angular-backend
+    networks:
+      - world-angular-net
+
+networks:
+  world-vue-net:
+    driver: bridge
+  world-react-net:
+    driver: bridge
+  world-angular-net:
+    driver: bridge
+
+volumes:
+  world_vue_postgres_data:
+  world_vue_redis_data:
+  world_react_postgres_data:
+  world_react_redis_data:

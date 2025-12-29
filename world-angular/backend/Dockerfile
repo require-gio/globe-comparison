@@ -24,7 +24,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --only=production
+# Install dev dependencies for build (tsc etc.)
+RUN npm ci
 
 COPY . .
 RUN npm run build
@@ -40,7 +41,8 @@ RUN npm ci --only=production
 
 # Copy built application
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/src/data ./src/data
+# Ensure runtime data is available under dist/data so compiled code can read it
+COPY --from=build /app/src/data ./dist/data
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \

@@ -21,16 +21,25 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build -- --configuration production
+ARG API_URL
+ENV API_URL=$API_URL
+RUN npm run build -- --configuration production && \
+    printf "window.__APP_ENV__ = {\"API_URL\": \"%s\"};" "$API_URL" > dist/world-globe-frontend/env.js
 
 # Production stage
 FROM nginx:alpine AS production
 
 # Copy nginx configuration
-COPY --from=build /app/nginx.conf /etc/nginx/nginx.conf
+# Place our server block into conf.d as default.conf (nginx base config will include it)
+COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built application
-COPY --from=build /app/dist/world-globe-frontend /usr/share/nginx/html
+# Copy built application (copy the browser output contents into web root to replace default nginx index)
+COPY --from=build /app/dist/world-globe-frontend/browser/ /usr/share/nginx/html/
+# Copy env.js (runtime app config) into web root
+COPY --from=build /app/dist/world-globe-frontend/env.js /usr/share/nginx/html/env.js
+# Ensure default welcome page is removed (if any) and content is correctly in web root
+RUN rm -rf /usr/share/nginx/html/50x.html || true && \
+    rm -rf /usr/share/nginx/html/*default* || true
 
 # Create non-root user
 RUN addgroup -g 1001 -S nginx-user && \

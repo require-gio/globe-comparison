@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { getPrismaClient } from '../config/database';
+import { getPrismaClient } from '../config/database.js';
 
 // Infer the Country type from Prisma
 type PrismaCountryResult = Awaited<ReturnType<PrismaClient['country']['findUnique']>>;

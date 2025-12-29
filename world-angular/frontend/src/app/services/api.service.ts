@@ -8,11 +8,18 @@ import { Country } from '../models/country.model';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_BASE_URL = 'http://localhost:3000/api';
+  // Derive API base URL from runtime `env.js` if available, otherwise fallback to localhost:3000
   private readonly REQUEST_TIMEOUT = 5000; // 5 seconds
   private readonly RETRY_ATTEMPTS = 2;
+  private API_BASE_URL: string;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    const runtimeApiUrl = (window as any)?.__APP_ENV__?.API_URL;
+    const base = runtimeApiUrl ? runtimeApiUrl.replace(/\/$/, '') : 'http://localhost:3000';
+    this.API_BASE_URL = `${base}/api`;
+    // Helpful debug log to confirm runtime API selection in browser console
+    console.info('[ApiService] API_BASE_URL set to', this.API_BASE_URL);
+  }
 
   /**
    * Retrieve country information by ISO 3166-1 alpha-2 country code
@@ -21,7 +28,9 @@ export class ApiService {
    * @returns Observable<Country> with country data or fallback data on error
    */
   getCountry(code: string): Observable<Country> {
-    const url = `${this.API_BASE_URL}/country/${code.toUpperCase()}`;
+    const upper = code.toUpperCase();
+    const url = `${this.API_BASE_URL}/country/${upper}`;
+    console.debug('[ApiService] getCountry', upper, '->', url);
 
     return this.http.get<Country>(url).pipe(
       timeout(this.REQUEST_TIMEOUT),

@@ -1,6 +1,6 @@
-import { countryModel } from '../models/Country';
-import { CacheService } from './cache.service';
-import { logger } from '../utils/logger';
+import { countryModel } from '../models/Country.js';
+import { CacheService } from './cache.service.js';
+import { logger } from '../utils/logger.js';
 
 export interface CountryData {
   id: string;

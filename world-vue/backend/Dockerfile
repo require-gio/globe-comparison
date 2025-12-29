@@ -30,7 +30,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-RUN npm ci --only=production && \
+# Install OpenSSL & libc compatibility required by Prisma on Alpine
+RUN apk add --no-cache libc6-compat openssl && \
+    npm ci --only=production && \
     npx prisma generate && \
     npm cache clean --force
 

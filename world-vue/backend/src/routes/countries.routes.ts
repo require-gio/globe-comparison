@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { countryService } from '../services/countryService';
-import { isoCodeSchema } from '../schemas/country.schema';
-import { logger } from '../utils/logger';
+import { countryService } from '../services/countryService.js';
+import { isoCodeSchema } from '../schemas/country.schema.js';
+import { logger } from '../utils/logger.js';
 
 interface GetCountryParams {
   iso: string;

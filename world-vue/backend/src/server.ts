@@ -123,10 +123,10 @@ async function start() {
 
     // Register routes
     const { registerHealthRoutes } = await import('./routes/health.routes.js');
-    await registerHealthRoutes(app);
+    await registerHealthRoutes(app as any);
     
     const { registerCountryRoutes } = await import('./routes/countries.routes.js');
-    await registerCountryRoutes(app);
+    await registerCountryRoutes(app as any);
 
     await app.listen({
       port: config.server.port,

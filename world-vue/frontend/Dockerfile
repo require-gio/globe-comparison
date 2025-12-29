@@ -14,6 +14,10 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Allow build-time API URL (Vite reads VITE_ prefixed vars at build time)
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Build application
 RUN npm run build
 
@@ -26,14 +30,12 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Create non-root user
-RUN addgroup -g 1001 -S nginx && \
-    adduser -S nginx -u 1001 -G nginx && \
-    chown -R nginx:nginx /usr/share/nginx/html && \
-    chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
+# Ensure nginx can serve files (ignore errors if group/user already exist)
+RUN chown -R nginx:nginx /usr/share/nginx/html || true && \
+    chown -R nginx:nginx /var/cache/nginx || true && \
+    chown -R nginx:nginx /var/log/nginx || true && \
     touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid
+    chown -R nginx:nginx /var/run/nginx.pid || true
 
 # Switch to non-root user
 USER nginx

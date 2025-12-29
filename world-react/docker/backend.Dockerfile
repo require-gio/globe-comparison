@@ -2,11 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy backend package files from the build context root
+COPY backend/package*.json ./
 
-RUN npm ci
+# Use npm install when no package-lock.json exists
+RUN npm install
 
-COPY . .
+# Copy backend source
+COPY backend/. .
 
 EXPOSE 4000
 
