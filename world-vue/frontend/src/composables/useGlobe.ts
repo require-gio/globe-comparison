@@ -86,8 +86,10 @@ export function useGlobe(canvas: HTMLCanvasElement | null, geoJsonData: FeatureC
   }
 
   /**
-   * Set up mouse and touch event listeners
+   * Set up mouse/touch event listeners and resize observers
    */
+  let resizeObserver: ResizeObserver | null = null
+
   const setupEventListeners = () => {
     if (!canvas || !interactionHandler) return
 
@@ -100,11 +102,29 @@ export function useGlobe(canvas: HTMLCanvasElement | null, geoJsonData: FeatureC
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
     canvas.addEventListener('touchend', handleTouchEnd)
 
+    // Window resize fallback
     window.addEventListener('resize', handleResize)
+
+    // Use ResizeObserver on the canvas parent (container) to detect layout-driven resizes
+    try {
+      const container = canvas.parentElement
+      if (container && (window as any).ResizeObserver) {
+        resizeObserver = new ResizeObserver(() => {
+          handleResize()
+        })
+        resizeObserver.observe(container)
+      }
+    } catch (err) {
+      // ResizeObserver not available or error occurred — fallback to window resize
+      console.warn('ResizeObserver not available, falling back to window resize')
+    }
+
+    // Ensure renderer matches initial canvas size
+    handleResize()
   }
 
   /**
-   * Clean up event listeners
+   * Clean up event listeners and ResizeObserver
    */
   const cleanupEventListeners = () => {
     if (!canvas) return
@@ -119,6 +139,16 @@ export function useGlobe(canvas: HTMLCanvasElement | null, geoJsonData: FeatureC
     canvas.removeEventListener('touchend', handleTouchEnd)
 
     window.removeEventListener('resize', handleResize)
+
+    // Disconnect ResizeObserver if present
+    try {
+      if (typeof resizeObserver !== 'undefined' && resizeObserver) {
+        resizeObserver.disconnect()
+        resizeObserver = null
+      }
+    } catch (err) {
+      // ignore
+    }
   }
 
   /**
@@ -247,13 +277,21 @@ export function useGlobe(canvas: HTMLCanvasElement | null, geoJsonData: FeatureC
   }
 
   /**
-   * Handle window resize
+   * Handle window / container resize
    */
   const handleResize = () => {
     if (!canvas || !renderer) return
-    
-    const width = canvas.clientWidth
-    const height = canvas.clientHeight
+
+    const width = Math.max(1, Math.round(canvas.clientWidth))
+    const height = Math.max(1, Math.round(canvas.clientHeight))
+
+    // Update pixel ratio in case DPR changed (e.g., when moving window between screens)
+    try {
+      renderer.getRenderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    } catch (err) {
+      // ignore if renderer unavailable
+    }
+
     renderer.resize(width, height)
   }
 
@@ -329,6 +367,10 @@ export function useGlobe(canvas: HTMLCanvasElement | null, geoJsonData: FeatureC
     error,
     hoveredCountry,
     initialize,
-    cleanup
+    cleanup,
+    triggerResize: (width: number, height: number) => {
+      if (!renderer) return
+      renderer.resize(width, height)
+    }
   }
 }

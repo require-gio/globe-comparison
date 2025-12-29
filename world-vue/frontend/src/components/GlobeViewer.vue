@@ -56,12 +56,13 @@ const initializeGlobe = () => {
 onMounted(() => {
   // Set canvas size to match container
   if (containerRef.value && canvasRef.value) {
-    const rect = containerRef.value.getBoundingClientRect()
-    canvasRef.value.width = rect.width
-    canvasRef.value.height = rect.height
+    updateCanvasSize()
 
     // Add mouse move tracking for popover positioning
     canvasRef.value.addEventListener('mousemove', handleCanvasMouseMove)
+
+    // Add resize listener at component level
+    window.addEventListener('resize', updateCanvasSize)
   }
 
   // Initialize if data is already available
@@ -74,11 +75,33 @@ onUnmounted(() => {
   if (canvasRef.value) {
     canvasRef.value.removeEventListener('mousemove', handleCanvasMouseMove)
   }
+
+  if (containerRef.value) {
+    window.removeEventListener('resize', updateCanvasSize)
+  }
   
   if (globeComposable.value) {
     globeComposable.value.cleanup()
   }
 })
+
+// Update canvas element size (both CSS display and drawing resolution)
+const updateCanvasSize = () => {
+  if (!containerRef.value || !canvasRef.value || !globeComposable.value) return
+
+  const rect = containerRef.value.getBoundingClientRect()
+  const width = Math.max(1, Math.round(rect.width))
+  const height = Math.max(1, Math.round(rect.height))
+
+  // Update canvas drawing resolution (the actual attribute)
+  canvasRef.value.width = width
+  canvasRef.value.height = height
+
+  // Trigger resize in the globe composable
+  globeComposable.value.triggerResize(width, height)
+
+  console.log(`Canvas resized to ${width}x${height}`)
+}
 
 // Mouse position tracking for popover
 const mousePosition = ref({ x: 0, y: 0 })
@@ -102,7 +125,9 @@ defineExpose({
 
 <style scoped>
 .globe-viewer {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;

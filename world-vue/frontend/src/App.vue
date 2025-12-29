@@ -1,8 +1,8 @@
 <template>
   <div id="app" class="min-h-screen bg-space-dark text-white">
     <!-- Tech name badge -->
-    <div class="fixed top-4 left-4 z-10 rounded-lg bg-space-blue/20 border border-space-blue/50 px-3 py-1">
-      <span class="text-sm font-semibold text-space-blue">Vue</span>
+    <div class="fixed top-4 left-4 z-10 rounded-lg bg-green-500/20 border border-green-400/50 px-3 py-1">
+      <span class="text-sm font-semibold text-green-400">Vue</span>
     </div>
 
     <!-- Loading overlay -->
@@ -86,7 +86,7 @@
     </div>
 
     <!-- Main content -->
-    <main class="relative h-screen w-full overflow-hidden">
+    <main class="absolute inset-0 overflow-hidden">
       <!-- Globe viewer -->
       <GlobeViewer ref="globeViewerRef" :geo-json-data="geoJsonData" />
       
