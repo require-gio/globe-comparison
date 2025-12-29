@@ -1,4 +1,4 @@
-# Globe Comparison — Claude Sonnet 4.5 Output Comparison
+# Vue, React, Angular Globes — Claude Sonnet 4.5 Output Comparison
 
 ![Globes Demo](globes-demo.gif)
 
