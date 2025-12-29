@@ -1,5 +1,7 @@
 # Globe Comparison — Claude Sonnet 4.5 Output Comparison
 
+![Globes Demo](globes-demo.gif)
+
 ## ✨ Project Overview
 **Purpose:** An experiment to compare the **output of Claude Sonnet 4.5** on the exact same web app implemented in different frontend frameworks (Vue, React, Angular). Each implementation showcases strengths and weaknesses — this repo documents differences, bugs, UX deviations, and performance sensitivities.
 
